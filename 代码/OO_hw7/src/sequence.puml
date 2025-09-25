@@ -1,0 +1,28 @@
+@startuml
+actor System
+
+System -> MainClass : main()
+MainClass -> InputThread : start()
+MainClass -> MainDispatcher : start()
+
+loop Input Reading
+    InputThread -> RequestTable : offer(request)
+end
+
+loop Dispatching
+    MainDispatcher -> RequestTable : poll()
+    alt not null
+        MainDispatcher -> DispatchStrategy : getElevatorId(request.passenger)
+        DispatchStrategy -> Elevator : getElevatorScore()
+        DispatchStrategy --> MainDispatcher : elevatorId
+        MainDispatcher -> Elevator : waitingPassenger.add(request.passenger)
+    end
+end
+
+loop Elevator Run
+    Elevator -> Elevator : hasTasks()
+    alt has task
+        Elevator -> Elevator : action()
+    end
+end
+@enduml

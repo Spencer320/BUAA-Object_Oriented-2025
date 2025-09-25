@@ -1,0 +1,184 @@
+@startuml
+' Settings for better layout
+left to right direction
+skinparam classAttributeIconSize 0
+hide empty members
+
+' --- Interfaces (from previous diagram for context) ---
+interface MessageInterface {
+  +getType(): int
+  +getId(): int
+  +getSocialValue(): int
+  +getPerson1(): PersonInterface
+  +getPerson2(): PersonInterface
+  +getTag(): TagInterface
+}
+
+interface EmojiMessageInterface {
+  +getEmojiId(): int
+}
+
+interface ForwardMessageInterface {
+  +getArticleId(): int
+}
+
+interface RedEnvelopeMessageInterface {
+  +getMoney(): int
+}
+
+interface PersonInterface {
+  +get...():
+  +containsTag(id: int): boolean
+  +addTag(tag: TagInterface): void
+  +delTag(id: int): void
+  +isLinked(person: PersonInterface): boolean
+  +queryValue(person: PersonInterface): int
+  +queryReceivedArticles(): List<Integer>
+  +addSocialValue(num: int): void
+  +addMoney(num: int): void
+}
+
+interface TagInterface {
+  +get...():
+  +addPerson(person: PersonInterface): void
+  +hasPerson(person: PersonInterface): boolean
+  +delPerson(person: PersonInterface): void
+}
+
+interface OfficialAccountInterface {
+  +get...():
+  +addFollower(person: PersonInterface): void
+  +containsFollower(person: PersonInterface): boolean
+  +addArticle(person: PersonInterface, id: int): void
+  +containsArticle(id: int): boolean
+  +removeArticle(id: int): void
+}
+
+interface NetworkInterface {
+  +method...(...)
+  +(...) // 37 methods in total
+}
+
+' --- Concrete Classes ---
+class Message implements MessageInterface {
+  -id: int
+  -socialValue: int
+  -type: int
+  -person1: PersonInterface
+  -person2: PersonInterface
+  -tag: TagInterface
+  +Message(...)
+  +Message(...)
+  +send(): void
+}
+
+class EmojiMessage extends Message implements EmojiMessageInterface {
+  -emojiId: int
+  +EmojiMessage(...)
+  +EmojiMessage(...)
+  +getEmojiId(): int
+}
+
+class ForwardMessage extends Message implements ForwardMessageInterface {
+  -articldId: int
+  +ForwardMessage(...)
+  +ForwardMessage(...)
+  +getArticleId(): int
+  +send(): void
+}
+
+class RedEnvelopeMessage extends Message implements RedEnvelopeMessageInterface {
+  -money: int
+  +RedEnvelopeMessage(...)
+  +RedEnvelopeMessage(...)
+  +getMoney(): int
+  +send(): void
+}
+
+class Person implements PersonInterface {
+  -attributes: ...
+  -...: // 5 basic attributes in total
+  -acquaintances: HashMap<Integer, Person>
+  -value: PriorityList
+  -tags: HashMap<Integer, Tag>
+  -receivedMessages: ... // special data structure
+  -receivedArticles: ... // special data structure
+  +Person(id: int, name: String, age: int)
+  +helpMethod...(...)
+  +(...) // 10 methods in total
+}
+
+class Tag implements TagInterface {
+  -id: int
+  -persons: HashMap<Integer, Person>
+  -halfValueSum: int
+  +Tag(id: int)
+  +modifyValue(value: int): void
+  +addSocialValue(socialValue: int): void
+  +receiveMessage(message: Message): void
+  +addMoney(money: int): void
+  +receiveArticle(id: Integer): void
+}
+
+class OfficialAccount implements OfficialAccountInterface {
+  -ownerId: int
+  -id: int
+  -name: String
+  -followers: HashMap<Integer, Person>
+  -articles: HashSet<Integer>
+  -contributions: PriorityList
+  +OfficialAccount(ownerId: int, id: int, name: String)
+  +sendArticle(articleId: int): void
+  +withdrawArticle(articleId: int, contributorId: Integer): void
+}
+
+class Network implements NetworkInterface {
+  -persons: HashMap<Integer, Person>
+  -accounts: HashMap<Integer, OfficialAccount>
+  -articles: HashSet<Integer>
+  -articleContributors: HashMap<Integer, Integer>
+  -messages: HashMap<Integer, Message>
+  -emojiIdList: HashSet<Integer>
+  -emojiHeatList: HashMap<Integer, Integer>
+  -tripleSum: int
+  +queryCommonAcquaintNum(id1: int, id2: int): int
+}
+
+class Runner {
+  -network: NetworkInterface
+  +run(): void
+}
+
+class MainClass {
+  +{static} main(args: String[]): void
+}
+
+' --- Relationships ---
+
+' Aggregation/Composition
+Network "1" o-- "*" Person : persons
+Network "1" o-- "*" OfficialAccount : accounts
+Network "1" o-- "*" Message : messages
+
+Person "1" o-- "*" Tag : tags
+Person "1" o-- "*" Message : receivedMessages
+
+OfficialAccount "1" o-- "*" Person : followers
+
+Tag "1" o-- "*" Person : persons
+
+' Association (Usage/Dependency)
+Message ..> PersonInterface
+Message ..> TagInterface
+
+Network ..> Tag
+
+Person ..> Message
+Tag ..> Message
+OfficialAccount ..> Person
+
+' MainClass and Runner
+MainClass ..> Runner : creates & invokes run()
+Runner ..> Network : creates & uses
+
+@enduml

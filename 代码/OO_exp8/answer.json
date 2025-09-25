@@ -1,0 +1,34 @@
+{
+    "Enumeration": [
+        "VehicleType(FUEL,ELECTRIC)",
+        "ShiftType(MORNING,AFTERNOON,NIGHT)",
+        "TripStatus(NORMAL,CANCELLED)"
+    ],
+    "Class": [
+        "BusStop(String:name,String:locationInfo)",
+        "BusRoute(int:routeNumber,BusStop:startStop,BusStop:endStop,List<BusStop>:intermediateStops)",
+        "abstract Bus(String:licensePlate,VehicleType:vehicleType,int:maxCapacity)",
+        "FuelBus(double:fuelLevel)",
+        "ElectricBus(double:chargeLevel)",
+        "Driver(String:driverId,String:name,String:gender,int:age)",
+        "Trip(String:tripId,LocalDate:date,BusRoute:route,Bus:assignedBus,ShiftType:shift,LocalTime:departureTime,Driver:assignedDriver,TripStatus:status)",
+        "BTMS(List<Bus>:allBuses,List<Driver>:allDrivers,List<BusRoute>:allRoutes,List<BusStop>:allBusStops,List<Trip>:schedule)"
+    ],
+    "Relationship": [
+        "FuelBus extends Bus",
+        "ElectricBus extends Bus",
+        "Bus associates VehicleType",
+        "BusRoute associates BusStop",
+        "BusRoute associates *BusStop",
+        "Trip associates BusRoute",
+        "Trip associates Bus",
+        "Trip associates ShiftType",
+        "Trip associates Driver",
+        "Trip associates TripStatus",
+        "BTMS associates *Bus",
+        "BTMS associates *Driver",
+        "BTMS associates *BusRoute",
+        "BTMS associates *BusStop",
+        "BTMS associates *Trip"
+    ]
+}

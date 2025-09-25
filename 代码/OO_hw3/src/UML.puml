@@ -1,0 +1,118 @@
+@startuml
+
+!theme plain
+
+'----------------- Core Expression Structure -----------------'
+interface Factor {
+  + Polynomial calculateFactor()
+}
+
+class Expr {
+  - terms: List<Term>
+  + addTerm(Term)
+  + calculateExpression(): Polynomial
+}
+
+class Term {
+  - factors: List<Factor>
+  + addFactor(Factor)
+  + calculateTerm(): Polynomial
+}
+
+'----------------- Factor Implementations -----------------'
+class Num implements Factor {
+  + calculateFactor(): Polynomial
+}
+
+class Var implements Factor {
+  + calculateFactor(): Polynomial
+}
+
+class DiffFactor implements Factor {
+  + calculateFactor(): Polynomial
+}
+
+class ExprFactor implements Factor {
+  + calculateFactor(): Polynomial
+}
+
+class TrigFactor implements Factor {
+  + calculateFactor(): Polynomial
+}
+
+'----------------- Math Core Classes -----------------'
+class Polynomial {
+  - monomials: Set<Monomial>
+  + add(Polynomial): Polynomial
+  + multiply(Polynomial): Polynomial
+  + derive(): Polynomial
+}
+
+class Monomial {
+  - coefficient: BigInteger
+  - exponent: int
+  + multiply(Monomial): Monomial
+  + derive(): Polynomial
+}
+
+'----------------- Parser & Preprocessor -----------------'
+class Lexer {
+  + nextToken(): void
+  + getCurrentToken(): Token
+}
+
+class Parser {
+  - lexer: Lexer
+  + parseExpression(): Expr
+  + parseTerm(): Term
+  + parseFactor(): Factor
+}
+
+class PreProcessor {
+  + preprocessInput(): String
+}
+
+'----------------- Main Class -----------------'
+class Main {
+  + main()
+}
+
+'----------------- Key Relationships -----------------'
+Expr "1" *-- "0..*" Term
+Term "1" *-- "0..*" Factor
+
+Polynomial "1" *-- "0..*" Monomial
+
+Parser --> Lexer
+Parser --> Expr
+Parser --> Term
+Parser --> Factor
+
+Expr --> Polynomial : «create»
+Term --> Polynomial : «create»
+Factor --> Polynomial : «create»
+
+PreProcessor --> Lexer : Preprocesses input
+PreProcessor --> Parser : Provides context
+
+Main --> PreProcessor
+Main --> Lexer
+Main --> Parser
+
+'----------------- Parsing Flow -----------------'
+note top of Parser
+ **Recursive Parsing Flow**:
+ 1. parseExpression() calls parseTerm()
+ 2. parseTerm() calls parseFactor()
+ 3. parseFactor() may recursively call parseExpression()
+end note
+
+'----------------- Math Connections -----------------'
+note right of Polynomial
+ **Expression Integration**:
+ - Expr.calculateExpression() returns Polynomial
+ - Term.calculateTerm() returns Polynomial
+ - Factor.calculateFactor() returns Polynomial
+end note
+
+@enduml

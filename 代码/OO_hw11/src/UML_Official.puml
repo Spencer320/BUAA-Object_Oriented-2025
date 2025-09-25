@@ -1,0 +1,126 @@
+@startuml
+
+' 定义接口
+interface MessageInterface {
+  +id: int
+  +socialValue: int
+  +type: int
+  +person1: PersonInterface
+  +person2: PersonInterface
+  +tag: TagInterface
+  +getType(): int
+  +getId(): int
+  +getSocialValue(): int
+  +getPerson1(): PersonInterface
+  +getPerson2(): PersonInterface
+  +getTag(): TagInterface
+}
+
+interface EmojiMessageInterface {
+  +emojiId: int
+  +getEmojiId(): int
+}
+
+interface ForwardMessageInterface {
+  +articleId: int
+  +getArticleId(): int
+}
+
+interface RedEnvelopeMessageInterface {
+  +money: int
+  +getMoney(): int
+}
+
+interface PersonInterface {
+  +id: int
+  +name: String
+  +age: int
+  +tags: List<TagInterface>
+  +messages: List<MessageInterface>
+  +receivedArticles: List<Integer>
+  +getId(): int
+  +addTag(tag: TagInterface): void
+  +isLinked(person: PersonInterface): boolean
+  +getMessages(): List<MessageInterface>
+  +getReceivedArticles(): List<Integer>
+}
+
+interface TagInterface {
+  +id: int
+  +persons: List<PersonInterface>
+  +getId(): int
+  +addPerson(person: PersonInterface): void
+  +hasPerson(person: PersonInterface): boolean
+  +getValueSum(): int
+  +getSize(): int
+}
+
+interface OfficialAccountInterface {
+  +id: int
+  +ownerId: int
+  +name: String
+  +followers: List<PersonInterface>
+  +articles: List<Integer>
+  +getOwnerId(): int
+  +addFollower(person: PersonInterface): void
+  +containsFollower(person: PersonInterface): boolean
+  +addArticle(person: PersonInterface, id: int): void
+}
+
+interface NetworkInterface {
+  +persons: List<PersonInterface>
+  +accounts: List<OfficialAccountInterface>
+  +messages: List<MessageInterface>
+  +getPerson(id: int): PersonInterface
+  +addPerson(person: PersonInterface): void
+  +addMessage(message: MessageInterface): void
+  +sendMessage(id: int): void
+  +createOfficialAccount(personId: int, accountId: int, name: String): void
+  +contributeArticle(personId: int, accountId: int, articleId: int): void
+}
+
+' 定义类
+class Runner {
+  -network: NetworkInterface
+  -personConstructor: Constructor<PersonInterface>
+  -networkConstructor: Constructor<NetworkInterface>
+  +Runner(...)
+  +run(): void
+}
+
+' 继承关系
+MessageInterface <|-- EmojiMessageInterface
+MessageInterface <|-- ForwardMessageInterface
+MessageInterface <|-- RedEnvelopeMessageInterface
+
+' 聚合/组合 和 关联关系
+NetworkInterface "1" o-- "*" PersonInterface : manages persons
+NetworkInterface "1" o-- "*" MessageInterface : manages messages
+NetworkInterface "1" o-- "*" OfficialAccountInterface : manages accounts
+
+PersonInterface "1" o-- "*" TagInterface : has
+PersonInterface "1" o-- "*" MessageInterface : receives
+PersonInterface "*" -- "*" PersonInterface : acquaintance
+
+MessageInterface "1" -- "1" PersonInterface : person1 (sender)
+MessageInterface "1" -- "0..1" PersonInterface : person2 (receiver)
+MessageInterface "1" -- "0..1" TagInterface : tag (group)
+
+TagInterface "1" o-- "*" PersonInterface : contains members
+
+OfficialAccountInterface "1" o-- "*" PersonInterface : has followers
+
+' 依赖关系
+NetworkInterface ..> TagInterface : uses
+OfficialAccountInterface ..> PersonInterface : owner (via ownerId)
+
+Runner ..> NetworkInterface : creates & uses
+Runner ..> PersonInterface : creates via Constructor
+Runner ..> TagInterface : creates via Constructor
+Runner ..> MessageInterface : creates via Constructor
+Runner ..> EmojiMessageInterface : creates via Constructor
+Runner ..> ForwardMessageInterface : creates via Constructor
+Runner ..> RedEnvelopeMessageInterface : creates via Constructor
+Runner ..> OfficialAccountInterface : creates via Constructor
+
+@enduml

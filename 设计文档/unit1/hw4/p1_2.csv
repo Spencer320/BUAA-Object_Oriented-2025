@@ -1,0 +1,22 @@
+Metrics,周六, 22 3月 2025 09:55:40 CST
+Class,CBO,LCOM,RFC
+DiffFactor,5,1,10
+Expr,7,1,11
+ExprFactor,5,1,10
+Factor,n/a,n/a,1
+Lexer,4,1,14
+MainClass,5,1,17
+Monomial,8,1,47
+Num,4,1,8
+Parser,13,1,24
+Polynomial,10,1,29
+PreProcessor,3,1,23
+ResFunction,1,1,28
+SelfFunction,1,1,17
+Term,5,1,11
+Token,3,2,3
+Token.Type,3,2,2
+TrigFactor,5,1,10
+TrigFactor.Trig,2,2,2
+Var,4,1,7
+
